@@ -1,0 +1,10 @@
+micronaut:
+  application:
+    name: signal
+  server:
+    port: 9081
+
+kafka:
+  bootstrap:
+    servers: localhost:9092
+

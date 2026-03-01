@@ -5,12 +5,12 @@ import io.github.funpilot.demo.mktdata.model.Price;
 import io.github.funpilot.demo.mktdata.repo.PriceRepo;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Produces;
+import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import jakarta.inject.Inject;
+import jakarta.persistence.PersistenceException;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +40,18 @@ public class PriceController {
             return HttpResponse.ok(price.get());
         } else {
             return HttpResponse.notFound();
+        }
+    }
+
+    @Post
+    @Produces(MediaType.APPLICATION_JSON)
+    public HttpResponse<Price> save(@Body @Valid Price newPrice) {
+        log.info("Request for save price: {} {}", newPrice.getSymbol(), newPrice.getExchange());
+        try {
+            repo.save(newPrice);
+            return HttpResponse.created(newPrice);
+        } catch(PersistenceException e) {
+            return HttpResponse.noContent();
         }
     }
 }
